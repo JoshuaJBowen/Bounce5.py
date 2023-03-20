@@ -1,6 +1,10 @@
-#Bounce5 (Cleaning code, adding a Surface object for clarity, paradigm shift: Ball and Surface interact within main function, not withint the ball)
+#Bounce5 
 #Josh Bowen
 #5/3/2022
+
+# Goals: paradigm shift: Ball and Surface interact 
+# within main function, not within the Ball class
+
 
 import turtle
 import random
@@ -30,7 +34,7 @@ class Surface():
         self.starting_point = [first_x, first_y]
         self.ending_point = [last_x, last_y]
         
-        #represent the linear surface with vector parameterization for consistency
+        #represent the linear surface with vector parameterization
         self.op = [first_x, first_y]
         self.v = [last_x - first_x, last_y - first_y]
         self.range_of_t = [0, 1]
@@ -77,50 +81,43 @@ class Surface():
 
     
     def get_normal(self, point):
-        """ A reader method that returns a unit-length normal vector at any given point
+        """ A fruitful method that returns a unit-length normal vector at any given point
 
                 point is a list of two integers representing an x-y point
         """
-        normal = [0,0]
-        #for a simple line segment the normal is constant regardless of location, unless its on the end point
-        #the only tricky part is doing the corners
+        #for a simple line segment the normal is constant regardless of location
+        #the only tricky part is finding the normal at the end point
         
-        if point[0] == self.starting_point[0] and point[1] == self.starting_point[1]:##########################################################################
-            #find out if this is an inside corner or outside corner or a flat intercept
-            #then calculate the corect normal
-            print("Still havent done this yet")
-            normal = [0,0]
-        elif point[0] == self.ending_point[0] and point[1] == self.ending_point[1]:
-            #find out if this is an inside corner or outside corner or a flat intercept
-            #then calculate the corect normal
-            print("Still havent done this yet")
-            normal = [0,0]
+        if self.starting_point == point or self.ending_point == point:
+            #return an indicator normal to handle special case
+            print("Returning indicator normal")
+            return [0,0]
         else:
-            normal =  [-1*self.v[1], self.v[0]]
+            #for a line the normal is easy to calculate
+            return [-1*self.v[1], self.v[0]]
         
-        return [normal[0]/math.sqrt(normal[0]**2 + normal[1]**2), (normal[1])/math.sqrt(normal[0]**2 + normal[1]**2)]       
+        #when returning the unit normal is this necessary? why not just send back the normal
+        #return [normal[0]/math.sqrt(normal[0]**2 + normal[1]**2), (normal[1])/math.sqrt(normal[0]**2 + normal[1]**2)]       
         
 
     def intercept_in_bounds(self, intercept):
-        """ A writer method that returns boolean values based on if a
-            calcualted ball intercept is within the bounds of the surface
+        """ A fruitful method that returns boolean values for if the calculated
+            intersect is inside the length of the surface
 
                 intercept is a list of two integers representing an x-y point
         """
-        in_bounds = False
-        
+               
         if self.v[0] == 0: #its a vertical surface
-            if (intercept[1] - self.op[1])/(self.v[1]) <= self.range_of_t[1] and (intercept[1] - self.op[1])/(self.v[1]) >= self.range_of_t[0]:
-                in_bounds = True
+            if (intercept[1] - self.op[1])/(self.v[1]) >= self.range_of_t[0] and (intercept[1] - self.op[1])/(self.v[1]) <= self.range_of_t[1]:
+                return True
         elif self.v[1] == 0: #its a horizontal surface
-            if (intercept[0] - self.op[0])/(self.v[0]) <= self.range_of_t[1] and (intercept[0] - self.op[0])/(self.v[0]) >= self.range_of_t[0]:
-                in_bounds = True
+            if (intercept[0] - self.op[0])/(self.v[0]) >= self.range_of_t[0] and (intercept[0] - self.op[0])/(self.v[0]) <= self.range_of_t[1]:
+                return True
         else: #check both equations
             print("Calc t value 1:", (intercept[0] - self.op[0])/(self.v[0]), "Calc t value 2:", (intercept[1] - self.op[1])/(self.v[1]))
-            if (intercept[1] - self.op[1])/(self.v[1]) <= self.range_of_t[1] and (intercept[1] - self.op[1])/(self.v[1]) >= self.range_of_t[0] and (intercept[0] - self.op[0])/(self.v[0]) == (intercept[1] - self.op[1])/(self.v[1]):
-                in_bounds = True
-
-        return in_bounds
+            if (intercept[1] - self.op[1])/(self.v[1]) <= self.range_of_t[1] and (intercept[1] - self.op[1])/(self.v[1]) >= self.range_of_t[0] 
+            and (intercept[0] - self.op[0])/(self.v[0]) == (intercept[1] - self.op[1])/(self.v[1]):
+                return True
                 
 
 class Ball():
